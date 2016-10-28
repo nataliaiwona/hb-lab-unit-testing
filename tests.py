@@ -65,13 +65,19 @@ class PartyTestsDatabase(unittest.TestCase):
 
         #FIXME: test that the games page displays the game from example_data()
     def test_games_not_logged_in(self):
-        # if user not RSVP'ed, they should be redirected to "/" route
         
+        # if user not RSVP'ed, they should be redirected to "/" route
+
+        # If there is a contradicting event to what is in the setup, include in
+        # function. Ex. default for setup here is logged in, and we're testing
+        # for functionality when logged out.
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['RSVP'] = False
 
-        result = self.client.get("/games")
+        # when desired result is a redirect, ensure that the 
+        # "follow_redirects" clause is true
+        result = self.client.get("/games", follow_redirects=True)
         self.assertNotIn("Apples", result.data)
         self.assertIn("I'm having an after-party!", result.data)
 
